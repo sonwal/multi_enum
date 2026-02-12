@@ -192,23 +192,29 @@ $response = $bitSync->convert();
 
 ### MySQL Example
 
-```php
-// Create table with integer column for flags
+**Create Table:**
+```sql
+-- Create table with integer column for flags
 CREATE TABLE products (
     id INT PRIMARY KEY,
     name VARCHAR(255),
     features INT DEFAULT 0
 );
+```
 
-// Storing flags
+**Storing Flags:**
+```php
 $features = "ACE";
 $bitmap = new bitmap("ABCDEFGH", $features, bitmap::STRING_LITERAL);
 $intValue = $bitmap->convert();
 
 // Insert into database
 $query = "INSERT INTO products (name, features) VALUES ('Product1', $intValue)";
+mysqli_query($conn, $query);
+```
 
-// Retrieving and converting back
+**Retrieving and Converting Back:**
+```php
 $query = "SELECT features FROM products WHERE id = 1";
 $result = mysqli_query($conn, $query);
 $row = mysqli_fetch_assoc($result);
