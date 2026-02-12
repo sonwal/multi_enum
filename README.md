@@ -208,16 +208,24 @@ $features = "ACE";
 $bitmap = new bitmap("ABCDEFGH", $features, bitmap::STRING_LITERAL);
 $intValue = $bitmap->convert();
 
-// Insert into database
-$query = "INSERT INTO products (name, features) VALUES ('Product1', $intValue)";
-mysqli_query($conn, $query);
+// Insert into database using prepared statement
+$stmt = $conn->prepare("INSERT INTO products (name, features) VALUES (?, ?)");
+$stmt->bind_param("si", $productName, $intValue);
+$productName = "Product1";
+$stmt->execute();
+$stmt->close();
 ```
 
 **Retrieving and Converting Back:**
 ```php
-$query = "SELECT features FROM products WHERE id = 1";
-$result = mysqli_query($conn, $query);
-$row = mysqli_fetch_assoc($result);
+// Retrieve using prepared statement
+$productId = 1;
+$stmt = $conn->prepare("SELECT features FROM products WHERE id = ?");
+$stmt->bind_param("i", $productId);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$stmt->close();
 
 $bitmap = new bitmap("ABCDEFGH", $row['features'], bitmap::INT_LITERAL);
 $flags = $bitmap->convert();
